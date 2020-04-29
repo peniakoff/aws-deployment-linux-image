@@ -6,9 +6,7 @@ RUN apt-get update \
     && add-apt-repository -y ppa:git-core/ppa \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
-        wget \
         xvfb \
-        bzip2 \
         ca-certificates \
         curl \
         file \
@@ -23,6 +21,7 @@ RUN apt-get update \
         patch \
         uuid-runtime \
         unzip \
+        jq \
     && rm -rf /var/lib/apt/lists/*
 
 # Installing nvm with node and npm
@@ -39,6 +38,9 @@ RUN curl https://raw.githubusercontent.com/creationix/nvm/v$NVM_VERSION/install.
 # Setting node path
 ENV NODE_PATH=$NVM_DIR/v$NODE_VERSION/lib/node_modules
 
+# Adding Nvm and Node to the path
+ENV PATH=$NVM_DIR:$NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
+
 # Setting Java Home
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 
@@ -49,9 +51,6 @@ ENV LANG=C.UTF-8 \
 
 # Xvfb provide an in-memory X-session for tests that require a GUI
 ENV DISPLAY=:99
-
-# Adding Nvm and Node to the path
-ENV PATH=$NVM_DIR:$NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 
 # Installing Homebrew environment
 RUN localedef -i en_US -f UTF-8 en_US.UTF-8 \
