@@ -24,23 +24,6 @@ RUN apt-get update \
         jq \
     && rm -rf /var/lib/apt/lists/*
 
-# Installing nvm with node and npm
-ENV NODE_VERSION=12.16.3 \
-    NVM_DIR=/root/.nvm \
-    NVM_VERSION=0.35.3
-
-RUN curl https://raw.githubusercontent.com/creationix/nvm/v$NVM_VERSION/install.sh | bash \
-    && . $NVM_DIR/nvm.sh \
-    && nvm install $NODE_VERSION \
-    && nvm alias default $NODE_VERSION \
-    && nvm use default
-
-# Setting node path
-ENV NODE_PATH=$NVM_DIR/v$NODE_VERSION/lib/node_modules
-
-# Adding Nvm and Node to the path
-ENV PATH=$NVM_DIR:$NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
-
 # Setting Java Home
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 
@@ -77,15 +60,38 @@ RUN mkdir -p /opt/atlassian/bitbucketci/agent/build \
     && useradd -m -s /bin/bash pipelines
 
 WORKDIR /home/pipelines
+
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
     && unzip awscliv2.zip \
     && ./aws/install
 
 USER pipelines
+
+# Installing nvm with node and npm
+RUN mkdir -p /home/pipelines/.nvm
+
+ENV NODE_VERSION=12.16.3 \
+    NVM_DIR=/home/pipelines/.nvm \
+    NVM_VERSION=0.35.3
+
+RUN curl https://raw.githubusercontent.com/creationix/nvm/v$NVM_VERSION/install.sh | bash \
+    && . $NVM_DIR/nvm.sh \
+    && nvm install $NODE_VERSION \
+    && nvm alias default $NODE_VERSION \
+    && nvm use default
+
+# Setting node path
+ENV NODE_PATH=$NVM_DIR/v$NODE_VERSION/lib/node_modules
+
+# Adding Nvm and Node to the path
+ENV PATH=$NVM_DIR:$NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
+
 WORKDIR /opt/atlassian/bitbucketci/agent/build
 ENTRYPOINT /bin/bash
 
 RUN java -version \
     && mvn --version \
     && sam --version \
-    && aws --version
+    && aws --version \
+    && node -v \
+    && npm -v
