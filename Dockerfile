@@ -50,8 +50,7 @@ RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/mast
 
 # Installing AWS-SAM-CLI
 RUN brew tap aws/tap \
-    && brew install aws-sam-cli \
-    && sam --version
+    && brew install aws-sam-cli
 
 # Create Bitbucket pipelines dirs and users
 USER root
@@ -61,6 +60,7 @@ RUN mkdir -p /opt/atlassian/bitbucketci/agent/build \
 
 WORKDIR /home/pipelines
 
+# Installing AWS-CLI
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
     && unzip awscliv2.zip \
     && ./aws/install
@@ -70,7 +70,7 @@ USER pipelines
 # Installing nvm with node and npm
 RUN mkdir -p /home/pipelines/.nvm
 
-ENV NODE_VERSION=12.16.3 \
+ENV NODE_VERSION=12.18.1 \
     NVM_DIR=/home/pipelines/.nvm \
     NVM_VERSION=0.35.3
 
