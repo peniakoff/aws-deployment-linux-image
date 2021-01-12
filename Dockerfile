@@ -70,9 +70,9 @@ USER pipelines
 # Installing nvm with node and npm
 RUN mkdir -p /home/pipelines/.nvm
 
-ENV NODE_VERSION=12.19.0 \
+ENV NODE_VERSION=12.18.1 \
     NVM_DIR=/home/pipelines/.nvm \
-    NVM_VERSION=0.37.2
+    NVM_VERSION=0.35.3
 
 RUN curl https://raw.githubusercontent.com/creationix/nvm/v$NVM_VERSION/install.sh | bash \
     && . $NVM_DIR/nvm.sh \
