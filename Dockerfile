@@ -1,11 +1,12 @@
-FROM ubuntu:bionic
+FROM ubuntu:focal
 LABEL maintainer="Tomasz Miller"
 
+ENV TZ=Europe/Warsaw
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends software-properties-common \
-    && add-apt-repository -y ppa:git-core/ppa \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends \
+    && apt-get install -y --no-install-recommends  \
+        software-properties-common \
         xvfb \
         ca-certificates \
         curl \
@@ -36,21 +37,25 @@ ENV LANG=C.UTF-8 \
 ENV DISPLAY=:99
 
 # Installing Homebrew environment
-RUN localedef -i en_US -f UTF-8 en_US.UTF-8 \
-    && useradd -m -s /bin/bash linuxbrew \
+RUN localedef -i en_US -f UTF-8 en_US.UTF-8
+RUN useradd -m -s /bin/bash linuxbrew \
     && echo 'linuxbrew ALL=(ALL) NOPASSWD:ALL' >>/etc/sudoers
 
 USER linuxbrew
 WORKDIR /home/linuxbrew
 ENV PATH=/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$PATH
 
-RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)" \
-    && echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.profile \
-    && brew --version
+RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+RUN test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
+RUN echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.profile
+RUN brew --version
 
 # Installing AWS-SAM-CLI
-RUN brew tap aws/tap \
-    && brew install aws-sam-cli
+RUN brew tap aws/tap
+RUN brew install aws-sam-cli
+# Workaround for issue reported here: https://github.com/aws/homebrew-tap/issues/146
+RUN command -v sam >/dev/null 2>&1 || { echo >&2 "SAM is not installed. Trying again..."; brew install aws-sam-cli; }
+RUN sam --version
 
 # Create Bitbucket pipelines dirs and users
 USER root
@@ -64,6 +69,7 @@ WORKDIR /home/pipelines
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
     && unzip awscliv2.zip \
     && ./aws/install
+RUN aws --version
 
 USER pipelines
 
@@ -89,9 +95,7 @@ ENV PATH=$NVM_DIR:$NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 WORKDIR /opt/atlassian/bitbucketci/agent/build
 ENTRYPOINT /bin/bash
 
-RUN java -version \
-    && mvn --version \
-    && sam --version \
-    && aws --version \
-    && node -v \
-    && npm -v
+RUN java -version
+RUN mvn --version
+RUN node -v
+RUN npm -v
