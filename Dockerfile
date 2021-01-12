@@ -1,4 +1,4 @@
-FROM ubuntu:bionic
+FROM ubuntu:focal
 LABEL maintainer="Tomasz Miller"
 
 RUN apt-get update \
@@ -44,13 +44,16 @@ USER linuxbrew
 WORKDIR /home/linuxbrew
 ENV PATH=/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$PATH
 
-RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)" \
-    && echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.profile \
-    && brew --version
+RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+RUN test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
+RUN test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+RUN echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.profile
+RUN brew --version
 
 # Installing AWS-SAM-CLI
-RUN brew tap aws/tap \
-    && brew install aws-sam-cli
+RUN brew tap aws/tap
+RUN brew install aws-sam-cli
+RUN sam --version
 
 # Create Bitbucket pipelines dirs and users
 USER root
@@ -64,6 +67,7 @@ WORKDIR /home/pipelines
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
     && unzip awscliv2.zip \
     && ./aws/install
+RUN aws --version
 
 USER pipelines
 
@@ -91,7 +95,5 @@ ENTRYPOINT /bin/bash
 
 RUN java -version \
     && mvn --version \
-    && sam --version \
-    && aws --version \
     && node -v \
     && npm -v
