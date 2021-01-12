@@ -95,7 +95,7 @@ ENV PATH=$NVM_DIR:$NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 WORKDIR /opt/atlassian/bitbucketci/agent/build
 ENTRYPOINT /bin/bash
 
-RUN java -version \
-    && mvn --version \
-    && node -v \
-    && npm -v
+RUN java -version
+RUN mvn --version
+RUN node -v
+RUN npm -v
