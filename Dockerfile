@@ -76,7 +76,7 @@ USER pipelines
 # Installing nvm with node and npm
 RUN mkdir -p /home/pipelines/.nvm
 
-ENV NODE_VERSION=12.19.0 \
+ENV NODE_VERSION=14.15.4 \
     NVM_DIR=/home/pipelines/.nvm \
     NVM_VERSION=0.37.2
 
