@@ -99,3 +99,5 @@ RUN java -version
 RUN mvn --version
 RUN node -v
 RUN npm -v
+
+RUN npm install --global yarn

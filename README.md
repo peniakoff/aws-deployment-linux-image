@@ -7,6 +7,8 @@ This image is based on LT Ubuntu Bionic. It helps to deploy services on AWS via 
 * Maven (latest from Ubuntu repository)
 * nvm (ver. 0.37.2)
 * Node (ver. 14.15.4)
+* npm (ver. 6.14.10)
+* yarn (ver. 1.22.10)
 * Homebrew (latest)
 * AWS-SAM-CLI (latest from Homebrew Formulae)
 * AWS CLI version 2
