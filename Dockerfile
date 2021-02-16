@@ -23,6 +23,7 @@ RUN apt-get update \
         uuid-runtime \
         unzip \
         jq \
+        python3.8 \
     && rm -rf /var/lib/apt/lists/*
 
 # Setting Java Home
@@ -36,27 +37,6 @@ ENV LANG=C.UTF-8 \
 # Xvfb provide an in-memory X-session for tests that require a GUI
 ENV DISPLAY=:99
 
-# Installing Homebrew environment
-RUN localedef -i en_US -f UTF-8 en_US.UTF-8
-RUN useradd -m -s /bin/bash linuxbrew \
-    && echo 'linuxbrew ALL=(ALL) NOPASSWD:ALL' >>/etc/sudoers
-
-USER linuxbrew
-WORKDIR /home/linuxbrew
-ENV PATH=/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$PATH
-
-RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-RUN test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
-RUN echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.profile
-RUN brew --version
-
-# Installing AWS-SAM-CLI
-RUN brew tap aws/tap
-RUN brew install aws-sam-cli
-# Workaround for issue reported here: https://github.com/aws/homebrew-tap/issues/146
-RUN command -v sam >/dev/null 2>&1 || { echo >&2 "SAM is not installed. Trying again..."; brew install aws-sam-cli; }
-RUN sam --version
-
 # Create Bitbucket pipelines dirs and users
 USER root
 RUN mkdir -p /opt/atlassian/bitbucketci/agent/build \
@@ -65,8 +45,14 @@ RUN mkdir -p /opt/atlassian/bitbucketci/agent/build \
 
 WORKDIR /home/pipelines
 
+# Installing AWS-SAM-CLI
+RUN curl -L -o "awssamcli.zip" "https://github.com/aws/aws-sam-cli/releases/download/v1.18.1/aws-sam-cli-linux-x86_64.zip" \
+    && unzip -d awssamcli awssamcli.zip \
+    && ./awssamcli/install
+RUN sam --version
+
 # Installing AWS-CLI
-RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
+RUN curl -L -o "awscliv2.zip" "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" \
     && unzip awscliv2.zip \
     && ./aws/install
 RUN aws --version
