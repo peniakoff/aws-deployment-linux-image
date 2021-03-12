@@ -89,6 +89,8 @@ ENV NODE_PATH=$NVM_DIR/v$NODE_VERSION/lib/node_modules
 # Adding Nvm and Node to the path
 ENV PATH=$NVM_DIR:$NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 
+ENV TERM xterm
+
 WORKDIR /opt/atlassian/bitbucketci/agent/build
 ENTRYPOINT /bin/bash
 
