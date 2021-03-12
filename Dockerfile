@@ -46,6 +46,7 @@ ENV LANG=C.UTF-8 \
     LANGUAGE=C.UTF-8
 
 # Xvfb provide an in-memory X-session for tests that require a GUI
+RUN Xvfb :99 &
 ENV DISPLAY=:99
 
 # Create Bitbucket pipelines dirs and users
