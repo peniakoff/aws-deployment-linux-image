@@ -23,7 +23,18 @@ RUN apt-get update \
         unzip \
         jq \
         python3.8 \
+        # libraries for Cypress compatibility 
+        libgtk2.0-0 \
+        libgtk-3-0 \
+        libnotify-dev \
         libgconf-2-4 \
+        libgbm-dev \
+        libnss3 \
+        libxss1 \
+        libasound2 \
+        libxtst6 \
+        xauth \
+        xvfb \
     && rm -rf /var/lib/apt/lists/*
 
 # Setting Java Home
