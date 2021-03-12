@@ -17,13 +17,13 @@ RUN apt-get update \
         locales \
         openjdk-8-jdk \
         maven \
-        make \
         openssh-client \
         patch \
         uuid-runtime \
         unzip \
         jq \
         python3.8 \
+        libgconf-2-4 \
     && rm -rf /var/lib/apt/lists/*
 
 # Setting Java Home
@@ -46,7 +46,7 @@ RUN mkdir -p /opt/atlassian/bitbucketci/agent/build \
 WORKDIR /home/pipelines
 
 # Installing AWS-SAM-CLI
-RUN curl -L -o "awssamcli.zip" "https://github.com/aws/aws-sam-cli/releases/download/v1.18.1/aws-sam-cli-linux-x86_64.zip" \
+RUN curl -L -o "awssamcli.zip" "https://github.com/aws/aws-sam-cli/releases/download/v1.20.0/aws-sam-cli-linux-x86_64.zip" \
     && unzip -d awssamcli awssamcli.zip \
     && ./awssamcli/install
 RUN sam --version
@@ -62,7 +62,7 @@ USER pipelines
 # Installing nvm with node and npm
 RUN mkdir -p /home/pipelines/.nvm
 
-ENV NODE_VERSION=14.15.4 \
+ENV NODE_VERSION=14.15.5 \
     NVM_DIR=/home/pipelines/.nvm \
     NVM_VERSION=0.37.2
 
